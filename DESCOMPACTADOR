@@ -1,0 +1,29 @@
+@echo off
+setlocal
+
+rem Vai para a pasta onde o script está
+cd /d "%~dp0"
+
+rem Pasta com os ZIPs (mesma pasta do .bat)
+set "zipFolder=%~dp0"
+
+rem Pasta de destino (subpasta "descompactado")
+set "destFolder=%~dp0descompactado"
+
+rem Cria a pasta de destino se não existir
+if not exist "%destFolder%" (
+    mkdir "%destFolder%"
+)
+
+rem Loop por cada arquivo ZIP na pasta do script
+for %%F in ("%zipFolder%*.zip") do (
+    echo Extraindo %%~nxF...
+    powershell -NoProfile -Command "Expand-Archive -Path '%%~fF' -DestinationPath '%destFolder%' -Force"
+)
+
+rem Caixa de diálogo informando conclusão
+powershell -NoProfile -Command ^
+  "Add-Type -AssemblyName PresentationFramework; 
+   [System.Windows.MessageBox]::Show('Arquivos descompactados para a pasta descompactado','Concluído')"
+
+pause
