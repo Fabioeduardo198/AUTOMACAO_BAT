@@ -1,0 +1,8 @@
+@echo off
+set "arquivo_saida=List.txt"
+
+echo Gerando lista de arquivos em %arquivo_saida%...
+dir /b /a-d > "%arquivo_saida%"
+
+echo Lista gerada com sucesso!
+pause
