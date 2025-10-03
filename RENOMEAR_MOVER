@@ -1,0 +1,47 @@
+@echo off
+setlocal enabledelayedexpansion
+
+REM Caminho do arquivo de mapeamento 
+REM ----- Para o código funcionar de forma eficiente ele usa lista de dimensão com o De X Para 
+REM ----- Todos os arquivos devem estar na mesma pasta
+REM --    A Estrutura deve seguir o seguinte padrão
+REM ----- nome antigo do arquivo.csv=NOVO_NOME_DO_ARQUIVO.CSV
+REM --    OBS. O COMANDO APENAS RENOMEIA ARQUIVO ELE NÃO CONVERTE
+set "MAP_FILE=list.txt"
+
+REM ----- Pasta de destino para arquivos renomeados
+set "DEST_FOLDER=ARQUIVO_RENOMEADO"
+
+REM Verifica se o arquivo de mapeamento existe
+if not exist "%MAP_FILE%" (
+    echo Arquivo de mapeamento "%MAP_FILE%" não encontrado.
+    pause
+    exit /b
+)
+
+REM Cria a pasta de destino se ela não existir
+if not exist "%DEST_FOLDER%" (
+    mkdir "%DEST_FOLDER%"
+)
+
+REM Loop pelas linhas do arquivo de mapeamento
+for /f "tokens=1,2 delims==" %%A in (%MAP_FILE%) do (
+    if exist "%%A" (
+        set "newName=%%B"
+        set "count=0"
+        :checkName
+        if exist "%DEST_FOLDER%\!newName!" (
+            set /a count+=1
+            set "newName=!count!_%%B"
+            goto checkName
+        )
+        echo Renomeando "%%A" para "!newName!"
+        ren "%%A" "!newName!"
+        move "!newName!" "%DEST_FOLDER%\"
+    ) else (
+        echo Arquivo "%%A" não encontrado.
+    )
+)
+
+echo Renomeação e movimentação concluídas.
+pause
